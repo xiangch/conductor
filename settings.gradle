@@ -62,4 +62,6 @@ include 'java-sdk'
 
 include 'test-harness'
 
+include 'amqp-listener'
+
 rootProject.children.each {it.name="conductor-${it.name}"}

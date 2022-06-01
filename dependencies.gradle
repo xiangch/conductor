@@ -50,4 +50,5 @@ ext {
     revSpock = '1.3-groovy-2.5'
     revSpotifyCompletableFutures = '0.3.3'
     revTestContainer = '1.15.3'
+    revAmqpClient = '5.13.0'
 }
