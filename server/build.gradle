@@ -31,6 +31,7 @@ dependencies {
     implementation project(':conductor-awssqs-event-queue')
     implementation project(':conductor-amqp-listener')
 
+
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -42,6 +43,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     implementation "org.springdoc:springdoc-openapi-ui:${revOpenapi}"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config:${revNacos}"
+    implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:${revNacos}"
 
     runtimeOnly "org.glassfish.jaxb:jaxb-runtime:${revJAXB}"
 

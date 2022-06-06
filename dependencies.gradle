@@ -51,4 +51,5 @@ ext {
     revSpotifyCompletableFutures = '0.3.3'
     revTestContainer = '1.15.3'
     revAmqpClient = '5.13.0'
+    revNacos = '2.2.3.RELEASE'
 }
