@@ -1,21 +1,33 @@
+/*
+ * Copyright 2022 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.netflix.conductor.contribs.listener.amqp;
-
-import com.rabbitmq.client.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.rabbitmq.client.*;
+
 /**
  * @author zengxc
  */
 public class AmqpConnection {
 
-    private static final Set<Channel> availableChannelPool =
-            new HashSet<>();
+    private static final Set<Channel> availableChannelPool = new HashSet<>();
     private static final String CLIENT_PROVIDED_NAME = "WorkflowStatusListener";
 
     private static Logger LOGGER = LoggerFactory.getLogger(AmqpConnection.class);
@@ -25,8 +37,7 @@ public class AmqpConnection {
 
     private volatile Connection publisherConnection = null;
 
-    private AmqpConnection() {
-    }
+    private AmqpConnection() {}
 
     public AmqpConnection(final ConnectionFactory factory, final Address[] address) {
         this.factory = factory;
@@ -46,41 +57,39 @@ public class AmqpConnection {
         // Channel creation is required
         Channel locChn = null;
 
-            try {
-                LOGGER.debug("Creating a channel");
-                locChn = rmqConnection.createChannel();
-                if (locChn == null || !locChn.isOpen()) {
-                    throw new RuntimeException("Fail to open a channel");
-                }
-                locChn.addShutdownListener(
-                        cause -> {
-                            LOGGER.error(
-                                    " Channel has been shutdown: {}",
-                                    cause.getMessage(),
-                                    cause);
-                        });
-                return locChn;
-            } catch (final IOException e) {
-                throw new RuntimeException(
-                        "Cannot open a"
-                                + " channel on "
-                                + Arrays.stream(addresses)
-                                .map(address -> address.toString())
-                                .collect(Collectors.joining(",")),
-                        e);
-            } catch (final Exception e) {
-                throw new RuntimeException(
-                        "Cannot open a"
-                                + " channel on "
-                                + Arrays.stream(addresses)
-                                .map(address -> address.toString())
-                                .collect(Collectors.joining(",")),
-                        e);
+        try {
+            LOGGER.debug("Creating a channel");
+            locChn = rmqConnection.createChannel();
+            if (locChn == null || !locChn.isOpen()) {
+                throw new RuntimeException("Fail to open a channel");
             }
+            locChn.addShutdownListener(
+                    cause -> {
+                        LOGGER.error(" Channel has been shutdown: {}", cause.getMessage(), cause);
+                    });
+            return locChn;
+        } catch (final IOException e) {
+            throw new RuntimeException(
+                    "Cannot open a"
+                            + " channel on "
+                            + Arrays.stream(addresses)
+                                    .map(address -> address.toString())
+                                    .collect(Collectors.joining(",")),
+                    e);
+        } catch (final Exception e) {
+            throw new RuntimeException(
+                    "Cannot open a"
+                            + " channel on "
+                            + Arrays.stream(addresses)
+                                    .map(address -> address.toString())
+                                    .collect(Collectors.joining(",")),
+                    e);
+        }
     }
 
     /**
      * borrowChannel -> returnChannel
+     *
      * @param rmqConnection
      * @return
      * @throws Exception
@@ -116,11 +125,12 @@ public class AmqpConnection {
                 throw new RuntimeException("Failed to open connection");
             }
             connection.addShutdownListener(
-                    cause -> LOGGER.error(
-                            "Received a shutdown exception for the connection {}. reason {} cause{}",
-                            connection.getClientProvidedName(),
-                            cause.getMessage(),
-                            cause));
+                    cause ->
+                            LOGGER.error(
+                                    "Received a shutdown exception for the connection {}. reason {} cause{}",
+                                    connection.getClientProvidedName(),
+                                    cause.getMessage(),
+                                    cause));
             connection.addBlockedListener(
                     new BlockedListener() {
                         @Override
@@ -143,20 +153,19 @@ public class AmqpConnection {
             final String error =
                     "IO error while connecting to "
                             + Arrays.stream(addresses)
-                            .map(address -> address.toString())
-                            .collect(Collectors.joining(","));
+                                    .map(address -> address.toString())
+                                    .collect(Collectors.joining(","));
             LOGGER.error(error, e);
             throw new RuntimeException(error, e);
         } catch (final TimeoutException e) {
             final String error =
                     "Timeout while connecting to "
                             + Arrays.stream(addresses)
-                            .map(address -> address.toString())
-                            .collect(Collectors.joining(","));
+                                    .map(address -> address.toString())
+                                    .collect(Collectors.joining(","));
             LOGGER.error(error, e);
             throw new RuntimeException(error, e);
         }
-
     }
 
     /**
